@@ -1,17 +1,18 @@
 package client.frame;
 
 import client.Sender;
-import client.util.FileChooserUtil;
-import client.util.FileSaveLoadUtil;
-import client.util.HTMLMaker;
-import client.util.UserList;
+import client.util.*;
 import model.ChatCommand;
 import model.Message;
+import model.TypeOfMessage;
+import client.util.FontManager;
 
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 
 /*
  * 실제로 채팅이 이뤄지는 패널
@@ -23,32 +24,35 @@ public class ChatPanel extends JPanel {
 	JTextPane chatTextPane;
 	JTextArea txtrMessage;
 	HTMLDocument doc;
-	DefaultListModel<String> userListModel = new DefaultListModel<String>();
+	DefaultListModel<String> userListModel = new DefaultListModel<>();
 	private StringBuffer messageList = new StringBuffer();
 	private boolean isOpenList = false;
 	private StringBuffer chatLog = new StringBuffer();
 	private HTMLMaker htmlMaker = new HTMLMaker();
-	
-	public ChatPanel() {		
+
+	public ChatPanel() {
 		setLayout(null);
-		
+
+		chatTextPane = new JTextPane();
+		chatTextPane.setFont(FontManager.getCustomFont(15f)); // 폰트 적용
+		txtrMessage = new JTextArea();
+		txtrMessage.setFont(FontManager.getCustomFont(15f)); // 폰트 적용
+
 		JPanel chatBoardPane = new JPanel();
-		chatBoardPane.setBackground(Color.ORANGE);
+		chatBoardPane.setBackground(Color.decode("#8CABD8"));
 		chatBoardPane.setBounds(0, 0, 300, 440);
 		add(chatBoardPane);
 		chatBoardPane.setLayout(null);
-		
+
 		chatScrollPane = new JScrollPane();
 		chatScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		chatScrollPane.setBounds(0, 45, 300, 395);
 		chatBoardPane.add(chatScrollPane);
-		
-		chatTextPane = new JTextPane();
-		chatTextPane.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-		chatTextPane.setBackground(Color.ORANGE);
+
+		chatTextPane.setBackground(Color.decode("#8CABD8"));
 		chatScrollPane.setViewportView(chatTextPane);
 		chatTextPane.setText("");
-				
+
 		userList = new JList(userListModel);
 		userList.addMouseListener(new MouseAdapter() {
 			@Override
@@ -59,31 +63,33 @@ public class ChatPanel extends JPanel {
 			}
 		});
 		userList.setBackground(Color.WHITE);
-		userList.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+		userList.setFont(FontManager.getCustomFont(15f)); // 폰트 적용
 		chatScrollPane.setColumnHeaderView(userList);
 		userList.setVisible(false);
 		userList.setVisibleRowCount(0);
 		userList.setAutoscrolls(true);
-		
-		JLabel lblUserList = new JLabel("≡");
+
+		ImageIcon userListIcon = new ImageIcon("images/userlist-bar.png");
+		Image scaledUserListImage = userListIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+		JLabel lblUserList = new JLabel(new ImageIcon(scaledUserListImage));
+
 		lblUserList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				userListControl();
 			}
 		});
-		lblUserList.setFont(new Font("맑은 고딕", Font.BOLD, 36));
 		lblUserList.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUserList.setBounds(12, 0, 40, 40);
 		chatBoardPane.add(lblUserList);
+
 		chatTextPane.setContentType("text/html");
 		doc = (HTMLDocument) chatTextPane.getStyledDocument();
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 450, 189, 70);
 		add(scrollPane);
-		
-		txtrMessage = new JTextArea();
+
 		txtrMessage.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -95,10 +101,10 @@ public class ChatPanel extends JPanel {
 		txtrMessage.setLineWrap(true);
 		txtrMessage.setWrapStyleWord(true);
 		scrollPane.setViewportView(txtrMessage);
-		
+
 		JButton btnNewButton = new JButton("전송");
-		btnNewButton.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-		btnNewButton.setBackground(Color.ORANGE);
+		btnNewButton.setFont(FontManager.getCustomFont(15f)); // 폰트 적용
+		btnNewButton.setBackground(Color.decode("#8CABD8"));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pressEnter(txtrMessage.getText());
@@ -106,8 +112,11 @@ public class ChatPanel extends JPanel {
 		});
 		btnNewButton.setBounds(211, 450, 65, 35);
 		add(btnNewButton);
-		
-		JLabel lblImage = new JLabel(new ImageIcon("images/image.png"));
+
+		JLabel lblImage = new JLabel();
+		ImageIcon originalIcon = new ImageIcon("images/image.png");
+		Image scaledImage = originalIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+		lblImage.setIcon(new ImageIcon(scaledImage));
 		lblImage.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -116,8 +125,11 @@ public class ChatPanel extends JPanel {
 		});
 		lblImage.setBounds(211, 490, 30, 30);
 		add(lblImage);
-		
-		JLabel lblSave = new JLabel(new ImageIcon("images/save.png"));
+
+		JLabel lblSave = new JLabel();
+		ImageIcon originalSaveIcon = new ImageIcon("images/save.png");
+		Image scaledSaveImage = originalSaveIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+		lblSave.setIcon(new ImageIcon(scaledSaveImage));
 		lblSave.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -125,17 +137,17 @@ public class ChatPanel extends JPanel {
 			}
 		});
 		lblSave.setBounds(246, 490, 30, 30);
-		add(lblSave);		
+		add(lblSave);
 	}
-	
+
 	private void setWhisperCommand(String whisperTarget) {
-		txtrMessage.setText(ChatCommand.WHISPER+" "+whisperTarget+" ");
+		txtrMessage.setText(ChatCommand.WHISPER + " " + whisperTarget + " ");
 	}
 
 	private boolean isDoubleClicked(MouseEvent e) {
 		return e.getClickCount() == 2;
 	}
-	
+
 	private void userListControl() {
 		if (isOpenList) {
 			userListClose();
@@ -143,18 +155,18 @@ public class ChatPanel extends JPanel {
 			userListOpen();
 		}
 	}
-	
+
 	private void userListOpen() {
 		setUserList();
 		userList.setVisible(true);
 		userList.setVisibleRowCount(8);
 		isOpenList = true;
 	}
-	
+
 	private void setUserList() {
 		userListModel.clear();
 		for (String userName : UserList.getUsernameList()) {
-			userListModel.addElement(userName); 
+			userListModel.addElement(userName);
 		}
 	}
 
@@ -163,7 +175,7 @@ public class ChatPanel extends JPanel {
 		userList.setVisibleRowCount(0);
 		isOpenList = false;
 	}
-	
+
 	private boolean isEnter(KeyEvent e) {
 		return e.getKeyCode() == KeyEvent.VK_ENTER;
 	}
@@ -181,10 +193,10 @@ public class ChatPanel extends JPanel {
 		txtrMessage.setText("");
 		txtrMessage.setCaretPosition(0);
 	}
-	
+
 	private void sendWhisper(String userMessage) {
 		String whisperTarget = userMessage.split(" ", 3)[1];
-		String sendingMessage = userMessage.replaceAll(ChatCommand.WHISPER+" "+whisperTarget, "");
+		String sendingMessage = userMessage.replaceAll(ChatCommand.WHISPER + " " + whisperTarget, "");
 		Sender.getSender().sendWhisper(sendingMessage, whisperTarget);
 	}
 
@@ -203,7 +215,7 @@ public class ChatPanel extends JPanel {
 	private boolean isWhisper(String text) {
 		return text.startsWith(ChatCommand.WHISPER.toString());
 	}
-	
+
 	private boolean isSearch(String userMessage) {
 		return userMessage.startsWith(ChatCommand.SEARCH.toString());
 	}
@@ -218,37 +230,45 @@ public class ChatPanel extends JPanel {
 			JOptionPane.showMessageDialog(null, ".png, .jpg 확장자 파일만 전송 가능합니다.");
 		}
 	}
-	
+
 	private void saveChatLog() {
 		String savePath = FileChooserUtil.getFilePath();
 		if (savePath == null) {
 			return;
 		}
-		FileSaveLoadUtil.fileSave(".txt", savePath+"/chatlog", chatLog.toString().getBytes());
+		FileSaveLoadUtil.fileSave(".txt", savePath + "/chatlog", chatLog.toString().getBytes());
 		JOptionPane.showMessageDialog(null, "저장 완료");
 	}
-	
+
 	public void addMessage(String adminMessage) {
 		messageList.append(htmlMaker.getHTML(adminMessage));
 		rewriteChatPane();
 		addChatLog(adminMessage);
 	}
-	
+
 	public void addMessage(boolean isMine, Message message) {
-		messageList.append(htmlMaker.getHTML(isMine, message));
+		boolean isWhisper = !isMine && isWhisperMessage(message);
+		boolean isWhisperSent = isMine && isWhisperMessage(message);
+
+		messageList.append(htmlMaker.getHTML(isMine, message, isWhisper || isWhisperSent));
 		rewriteChatPane();
 		addChatLog(message.getName(), message.getMessage());
 	}
-	
+
+
+	private boolean isWhisperMessage(Message message) {
+		return message.getType() == TypeOfMessage.WHISPER;
+	}
+
 	private void rewriteChatPane() {
 		chatTextPane.setText(messageList.toString());
 		chatTextPane.setCaretPosition(doc.getLength());
 	}
-	
+
 	private void addChatLog(String adminMessage) {
 		chatLog.append(adminMessage + "\r\n");
 	}
-	
+
 	private void addChatLog(String userName, String userMsg) {
 		chatLog.append(userName + " : " + userMsg + "\r\n");
 	}

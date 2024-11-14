@@ -1,6 +1,7 @@
 package client.frame;
 
 import client.Listener;
+import client.util.FontManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,26 +20,26 @@ public class LoginPanel extends JPanel {
 
 	public LoginPanel(final AppFrame frame) {
 		
-		setBackground(Color.ORANGE);
+		setBackground(Color.decode("#8CABD8"));
 		setLayout(null);
 		
-		JLabel lblTitle = new JLabel("javatalk");
+		JLabel lblTitle = new JLabel("Java-Chat");
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setFont(new Font("맑은 고딕", Font.BOLD, 34));
+		lblTitle.setFont(FontManager.getCustomFont(34f));
 		lblTitle.setBounds(12, 100, 276, 46);
 		add(lblTitle);
 		
 		txtName = new JTextField();
-		txtName.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+		txtName.setFont(FontManager.getCustomFont(14f));
 		txtName.setHorizontalAlignment(SwingConstants.CENTER);
 		txtName.setBounds(82, 366, 136, 27);
 		add(txtName);
 		txtName.setColumns(10);
 		
-		JButton btnLogin = new JButton("login");
+		JButton btnLogin = new JButton("로그인");
 		btnLogin.setForeground(Color.WHITE);
 		btnLogin.setBackground(Color.DARK_GRAY);
-		btnLogin.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+		btnLogin.setFont(FontManager.getCustomFont(14f));
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (txtName.getText() != null && !txtName.getText().equals("")) {

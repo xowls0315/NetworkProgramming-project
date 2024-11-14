@@ -11,7 +11,7 @@ public class AppFrame extends JFrame {
 	private ChatPanel chatPane;
 
 	public AppFrame() {
-		setTitle("javatalk");
+		setTitle("Java-Chat");
 		loginPane = new LoginPanel(this);
 		chatPane = new ChatPanel();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
