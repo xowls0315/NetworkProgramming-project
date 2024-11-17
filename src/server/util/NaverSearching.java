@@ -46,10 +46,35 @@ public class NaverSearching {
 		int descriptionStart = responseJson.indexOf("\"description\"");
 		return responseJson.substring(linkStart+9, descriptionStart-2);
 	}
-	
-	public String getDescription() {
-		int descriptionStart = responseJson.indexOf("\"description\"");
-		int thumbnailStart = responseJson.indexOf("\"thumbnail\"");
-		return responseJson.substring(descriptionStart+16, thumbnailStart-2);
-	}
+
+    public String getDescription() {
+        int descriptionStart = responseJson.indexOf("\"description\"");
+        int thumbnailStart = responseJson.indexOf("\"thumbnail\"");
+        String description = responseJson.substring(descriptionStart + 16, thumbnailStart - 2);
+
+        // 1. 모든 백슬래시 제거
+        description = description.replaceAll("\\\\", "");
+
+        // 2. 모든 HTML 태그 제거
+        description = description.replaceAll("<[^>]*>", "");
+
+        // 3. HTML 엔티티 변환
+        description = description.replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&amp;", "&")
+                .replace("&quot;", "\"")
+                .replace("&#39;", "'");
+
+        // 4. 특수 문자 및 불필요한 문구 제거
+        description = description.replaceAll("\\/b>", "")       // "\/b>" 제거
+                .replaceAll("\\/b", "")        // "\/b" 제거
+                .replaceAll("\\\\n", " ")      // 이스케이프된 줄바꿈 제거
+                .replaceAll("\\\\t", " ")      // 이스케이프된 탭 제거
+                .replaceAll("[\\[\\]]", "");   // 대괄호 제거
+
+        // 5. 여러 공백을 하나의 공백으로 축소
+        description = description.replaceAll("\\s{2,}", " ").trim();
+
+        return description;
+    }
 }
