@@ -71,16 +71,16 @@ public class Listener implements Runnable {
 	private boolean isLogined() throws ClassNotFoundException, IOException {
 		message = (Message) objectInputStream.readObject();
 		switch (message.getType()) {
-		case DUPLICATE:
-			duplicateName();
-			return false;
-		case WELCOME:
-			UserList.setList(message.getUserList());
-		default:
-			frame.changeToChat();
-			new Sender(objectOutputStream,name);
-			printMessage(message.getMessage());
-			return true;
+			case DUPLICATE:
+				duplicateName();
+				return false;
+			case WELCOME:
+				UserList.setList(message.getUserList());
+			default:
+				frame.changeToChat();
+				new Sender(objectOutputStream,name);
+				printMessage(message.getMessage());
+				return true;
 		}
 	}
 
@@ -88,21 +88,21 @@ public class Listener implements Runnable {
 		while (socket.isConnected()) {
 			message = (Message) objectInputStream.readObject();
 			switch (message.getType()) {
-			case DUPLICATE:
-				duplicateName();
-				return;
-			case IMAGE:
-				message.setMessage((saveImage()));
-				printMessage();
-				break;
-			case WELCOME:
-			case EXIT:
-				UserList.setList(message.getUserList());
-				printMessage(message.getMessage());
-				break;
-			default:
-				printMessage();
-				break;
+				case DUPLICATE:
+					duplicateName();
+					return;
+				case IMAGE:
+					message.setMessage((saveImage()));
+					printMessage();
+					break;
+				case WELCOME:
+				case EXIT:
+					UserList.setList(message.getUserList());
+					printMessage(message.getMessage());
+					break;
+				default:
+					printMessage();
+					break;
 			}
 		}
 	}

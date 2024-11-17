@@ -89,7 +89,10 @@ public class HTMLMaker {
 	}
 
 	private void setUserMsg(TypeOfMessage messageType, String userMessage) {
-		String imgTag = "<img src=\"file:" + FilePath.DOWNLOADFILEPATH + userMessage + "\" height=\"160\" width=\"160\">";
+		// 절대 경로를 사용하여 이미지 경로 설정
+		String imgPath = String.format("file:%s/download/%s", System.getProperty("user.dir"), userMessage);
+		// 이미지 태그 생성
+		String imgTag = String.format("<img src=\"%s\">", imgPath);
 		userMsg.put(TypeOfMessage.IMAGE, imgTag);
 	}
 
@@ -103,4 +106,5 @@ public class HTMLMaker {
 		}
 		return ret.toString();
 	}
+
 }
