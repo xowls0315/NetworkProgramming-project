@@ -59,7 +59,7 @@ public class Listener implements Runnable {
 			closeConnection();
 		}
 	}
-	
+
 	private void login() throws IOException {
 		message = new Message();
 		message.setName(name);
@@ -67,7 +67,7 @@ public class Listener implements Runnable {
 		objectOutputStream.writeObject(message);
 		objectOutputStream.reset();
 	}
-	
+
 	private boolean isLogined() throws ClassNotFoundException, IOException {
 		message = (Message) objectInputStream.readObject();
 		switch (message.getType()) {
@@ -106,15 +106,15 @@ public class Listener implements Runnable {
 			}
 		}
 	}
-	
+
 	private void duplicateName() {
 		frame.changeToError("이미 존재하는 이름입니다. 다른 이름을 선택해 주세요.");
 	}
-	
+
 	private void networkDisconnection() {
 		frame.changeToError("네트워크에 문제가 발생했습니다.");
 	}
-	
+
 	private void printMessage(String adminMsg) {
 		chatPanel.addMessage(adminMsg);
 	}
@@ -122,11 +122,11 @@ public class Listener implements Runnable {
 	private void printMessage() {
 		chatPanel.addMessage(isMine(),message);
 	}
-	
+
 	private boolean isMine() {
 		return name.equals(message.getName());
 	}
-	
+
 	private String saveImage() {
 		return FileSaveLoadUtil.fileSave(message.getImageExtention(), FilePath.DOWNLOADFILEPATH.toString(), message.getImage());
 	}

@@ -12,7 +12,6 @@ import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
 
 /*
  * 실제로 채팅이 이뤄지는 패널
@@ -125,19 +124,6 @@ public class ChatPanel extends JPanel {
 		});
 		lblImage.setBounds(211, 490, 30, 30);
 		add(lblImage);
-
-		JLabel lblSave = new JLabel();
-		ImageIcon originalSaveIcon = new ImageIcon("images/save.png");
-		Image scaledSaveImage = originalSaveIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-		lblSave.setIcon(new ImageIcon(scaledSaveImage));
-		lblSave.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				saveChatLog();
-			}
-		});
-		lblSave.setBounds(246, 490, 30, 30);
-		add(lblSave);
 	}
 
 	private void setWhisperCommand(String whisperTarget) {
@@ -231,15 +217,6 @@ public class ChatPanel extends JPanel {
 		}
 	}
 
-	private void saveChatLog() {
-		String savePath = FileChooserUtil.getFilePath();
-		if (savePath == null) {
-			return;
-		}
-		FileSaveLoadUtil.fileSave(".txt", savePath + "/chatlog", chatLog.toString().getBytes());
-		JOptionPane.showMessageDialog(null, "저장 완료");
-	}
-
 	public void addMessage(String adminMessage) {
 		messageList.append(htmlMaker.getHTML(adminMessage));
 		rewriteChatPane();
@@ -254,7 +231,6 @@ public class ChatPanel extends JPanel {
 		rewriteChatPane();
 		addChatLog(message.getName(), message.getMessage());
 	}
-
 
 	private boolean isWhisperMessage(Message message) {
 		return message.getType() == TypeOfMessage.WHISPER;

@@ -23,7 +23,7 @@ public class FileSaveLoadUtil {
 		}
 		return fileName;
 	}
-	
+
 	public static byte[] fileLoad(String path) {
 		File file = new File(path);
 		byte[] loadFile = new byte[(int)file.length()];

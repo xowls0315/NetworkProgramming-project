@@ -15,26 +15,26 @@ public class Sender {
 	String name;
 	ObjectOutputStream objectOutputStream;
 	private static Sender sender;
-	
+
 	public Sender(ObjectOutputStream objectOutputStream, String name) {
 		this.name = name;
 		this.objectOutputStream = objectOutputStream;
 		sender = this;
 	}
-	
+
 	public void sendMessage(String userMessage) {
 		Message message = getMessage(userMessage);
 		message.setType(TypeOfMessage.MESSAGE);
 		send(message);
 	}
-	
+
 	public void sendWhisper(String userMessage, String whisperTarget) {
 		Message message = getMessage(userMessage);
 		message.setType(TypeOfMessage.WHISPER);
 		message.setWhisperTarget(whisperTarget);
 		send(message);
 	}
-	
+
 	public void sendImage(String imagePath) {
 		Message message = getMessage(null);
 		message.setType(TypeOfMessage.IMAGE);
@@ -42,20 +42,20 @@ public class Sender {
 		message.setImage(FileSaveLoadUtil.fileLoad(imagePath));
 		send(message);
 	}
-	
+
 	public void sendSearch(String keyword) {
 		Message message = getMessage(keyword);
 		message.setType(TypeOfMessage.SEARCH);
 		send(message);
 	}
-	
+
 	public Message getMessage(String userMessage) {
 		Message message = new Message();
 		message.setName(name);
-		message.setMessage(userMessage);		
+		message.setMessage(userMessage);
 		return message;
 	}
-	
+
 	public void send(Message message) {
 		try {
 			objectOutputStream.writeObject(message);
@@ -64,7 +64,7 @@ public class Sender {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static Sender getSender() {
 		return sender;
 	}
